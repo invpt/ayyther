@@ -124,27 +124,25 @@ public final class Ayyther extends JavaPlugin {
 }
 
 class EventListener implements Listener {
-    // Makes it so entites only spawn in darkness that is from <= 20 blocks above
+    private static final double darknessMonsterSpawnMaxmimumDistance = 20.0;
+
+    // Cancels all monster spawns that are due to darkness that are
+    // caused by blocks more than darknessMonsterSpawnMaxmimumDistance above
     @EventHandler
     public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
         if (isAyytherWorld(event.getLocation().getWorld()) && isDaytime(event.getLocation().getWorld().getTime()) && event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL && event.getEntity() instanceof Monster) {
-            // Raytrace straight above the entity.
-            // This is to check if they are spawning due to darkness.
+            // Raytrace straight above the monster
             RayTraceResult result = event.getLocation().getWorld().rayTraceBlocks(event.getLocation(), new Vector(0.0, 1.0, 0.0), 256.0);
 
-            // If the raytrace hit something (if spawn is due to darkness)
             if (result != null) {
-                // If the length of the raytrace is greater than 20 blocks
-                // (if the thing that's making it dark is > 20 blocks above)
-                if (result.getHitPosition().subtract(event.getLocation().toVector()).length() > 20.0) {
-                    // Don't spawn the entity
+                if (result.getHitPosition().subtract(event.getLocation().toVector()).length() > darknessMonsterSpawnMaxmimumDistance) {
                     event.setCancelled(true);
                 }
             }
         }
     }
 
-    // Cancels all ender pearl damages in ayyther
+    // Cancels all ender pearl damage in Ayyther
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof EnderPearl && isAyytherWorld(event.getEntity().getWorld())) {
