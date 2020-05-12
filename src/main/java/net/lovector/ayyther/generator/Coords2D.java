@@ -55,17 +55,6 @@ public class Coords2D {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Coords2D other = (Coords2D) obj;
-        if (x != other.x)
-            return false;
-        if (z != other.z)
-            return false;
-        return true;
+        return this == obj || (obj instanceof Coords2D && ((Coords2D) obj).x == x && ((Coords2D) obj).z == z);
     }
 }
