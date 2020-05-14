@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
@@ -23,11 +24,13 @@ import net.lovector.ayyther.generator.AyytherGenerator;
 
 public final class Ayyther extends JavaPlugin {
     ArrayList<AyytherGenerator> generators = new ArrayList<>();
+    private static Logger logger = null;
 
     @Override
     public void onEnable() {
         // TODO: check if any of the worlds in the Ayyther/worlds folder have been deleted
 
+        logger = getLogger();
         getServer().getPluginManager().registerEvents(new EventListener(), this);
         getLogger().info("Ayyther enabled.");
     }
@@ -53,6 +56,10 @@ public final class Ayyther extends JavaPlugin {
         }
 
         getLogger().info("Ayyther disabled.");
+    }
+
+    public static Logger logger() {
+        return logger;
     }
 
     private void saveGeneratorData(File worldFile, AyytherGenerator generator) throws IOException {
