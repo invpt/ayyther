@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.World;
@@ -120,7 +121,9 @@ public final class Ayyther extends JavaPlugin {
     private AyytherGenerator loadGeneratorData(File worldFile, String worldName) throws IOException {
         if (worldFile.exists()) {
             try (DataInputStream inputStream = new DataInputStream(new FileInputStream(worldFile))) {
-                return new AyytherGenerator(worldName, inputStream.readAllBytes());
+                byte[] bytes = new byte[(int) worldFile.length()];
+                inputStream.read(bytes);
+                return new AyytherGenerator(worldName, bytes);
             } catch (IOException e) {
                 throw e;
             }
