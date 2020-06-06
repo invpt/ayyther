@@ -1,4 +1,4 @@
-package net.lovector.ayyther.generator.populators;
+package net.lovector.ayyther.generator.populator.normal;
 
 import java.util.Random;
 
@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 
-import net.lovector.ayyther.generator.AyytherBlockPopulator;
+import net.lovector.ayyther.generator.populator.AyytherBlockPopulator;
 
 public class DebrisPopulator extends AyytherBlockPopulator {
     private int lowerBound;
@@ -35,11 +35,8 @@ public class DebrisPopulator extends AyytherBlockPopulator {
                     for (; y >= lowerBound; --y) {
                         Material material = chunk.getBlock(x, y, z).getType();
 
-                        // If we just transitioned to a solid block from air
-                        // that continued for at more than 6 blocks and the
-                        // most recent solid block was (sand)stone
-                        if (material != Material.AIR && lastMaterial == Material.AIR && numLastMaterial > 6 && (lastSolidMaterial == Material.STONE || lastSolidMaterial == Material.SANDSTONE)) {
-                            double debrisAmount = (1.0 - Math.min(1.0, numLastMaterial / 75D)) * 0.5D;
+                        if (material.isSolid() && lastMaterial == Material.AIR && numLastMaterial > 6 && (lastSolidMaterial == Material.STONE || lastSolidMaterial == Material.SANDSTONE)) {
+                            double debrisAmount = (1.0 - Math.min(1.0, numLastMaterial / 150D)) * 0.2D;
 
                             // Generate some debris
                             genDebris(random, chunk, x, y + 1, z, debrisAmount);
@@ -81,25 +78,29 @@ public class DebrisPopulator extends AyytherBlockPopulator {
         }
     }
     
-    private void genDebris(Random random, Chunk chunk, int x, int startY, int z, double debrisAmount) {
-        if (random.nextDouble() < debrisAmount) {
-            int endY = startY + random.nextInt(3);
+    private void genDebris(Random random, Chunk chunk, int x, int startY, int z, double debrisChance) {
+        if (random.nextDouble() < debrisChance) {
+            int height = Math.min(3, (int) Math.round(debrisChance * 14));
 
-            for (int y = startY; y <= endY; ++y) {
-                Material material;
-                switch (random.nextInt(3)) {
-                    case 0:
-                        material = Material.STONE;
-                        break;
-                    case 1:
-                        material = Material.GRAVEL;
-                        break;
-                    default:
-                        material = Material.COBBLESTONE;
-                        break;
+            if (height > 0) {
+                int endY = startY + random.nextInt(height);
+
+                for (int y = startY; y <= endY; ++y) {
+                    Material material;
+                    switch (random.nextInt(3)) {
+                        case 0:
+                            material = Material.STONE;
+                            break;
+                        case 1:
+                            material = Material.GRAVEL;
+                            break;
+                        default:
+                            material = Material.COBBLESTONE;
+                            break;
+                    }
+
+                    chunk.getBlock(x, y, z).setType(material);
                 }
-
-                chunk.getBlock(x, y, z).setType(material);
             }
         }
     }
